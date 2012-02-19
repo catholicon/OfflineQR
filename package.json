@@ -1,8 +1,8 @@
 {
     "name": "offline_qr", 
-    "license": "MPL 1.1/GPL 2.0/LGPL 2.1", 
+    "license": "MPL 2.0", 
     "author": "Vikas Saurabh", 
-    "version": "0.1", 
+    "version": "0.2", 
     "fullName": "Offline QR generator", 
     "id": "jid1-5h9We5DytuZ14Q", 
     "description": "a basic add-on to generate QR code on html5 canvas"
