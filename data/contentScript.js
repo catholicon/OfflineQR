@@ -5,7 +5,3 @@ self.port.on("myAddonScriptEvent", function(payloadFromAddon)
 		document.defaultView.postMessage(JSON.stringify(payloadFromAddon), "*");
 	}
 });
-document.onload = function()
-{
-	self.port.emit("myContentScriptEvent", "shown");
-}
