@@ -7,16 +7,16 @@
     <script type="text/javascript" src="html5-qrcode.js">
 	</script>
 	<script type="text/javascript">
-		var textFromAddon;
-		window.addEventListener("message", function(event)
+		if(addon)//available as experimental feature for trusted panel source files in jetpack sdk
 		{
-			var eventData = JSON.parse(event.data);
-			if(eventData["event"]=="showQR")
+			addon.port.on("myAddonScriptEvent", function(payloadFromAddon)
 			{
-				window.updateQRCode(eventData["text"]);
-			}
-		}, false
-		);
+				if(payloadFromAddon["event"]=="showQR")
+				{
+					updateQRCode(payloadFromAddon["text"]);
+				}
+			});
+		}
 		function updateQRCode(text)
 		{
 			var element = document.getElementById("qrcode");
