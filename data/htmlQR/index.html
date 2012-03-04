@@ -13,20 +13,20 @@
 			{
 				if(payloadFromAddon["event"]=="showQR")
 				{
-					updateQRCode(payloadFromAddon["text"]);
+					updateQRCode(payloadFromAddon["text"], payloadFromAddon["version"], payloadFromAddon["errorCorrectLevel"], 295);
 				}
 			});
 		}
-		function updateQRCode(text)
+		function updateQRCode(text, version, errorCorrectLevel)
 		{
 			var element = document.getElementById("qrcode");
 
 			if(element)
 			{
 				if(element.lastChild)
-				  element.replaceChild(showQRCode(text), element.lastChild);
+				  element.replaceChild(showQRCode(text, version, errorCorrectLevel), element.lastChild);
 				else
-				  element.appendChild(showQRCode(text));
+				  element.appendChild(showQRCode(text, version, errorCorrectLevel));
 			}
 			else
 			{

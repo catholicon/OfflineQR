@@ -2,8 +2,22 @@
     "name": "offline_qr", 
     "license": "MPL 1.1", 
     "author": "Vikas Saurabh", 
-    "version": "0.5.1", 
+    "version": "0.6", 
     "fullName": "Offline QR generator", 
     "id": "jid1-5h9We5DytuZ14Q", 
-    "description": "a basic add-on to generate QR code on html5 canvas"
+    "description": "a basic add-on to generate QR code on html5 canvas",
+	"preferences": [
+		{
+			"name": "QRCodeVersion",
+			"title": "QR-Code Version (1-19)",
+			"type": "integer",
+			"value": 10
+		},
+		{
+			"name": "QRErrorCorrectLevel",
+			"title": "QR-Code Error Correct Level (L, M, Q or H)",
+			"type": "string",
+			"value": "L"
+		}
+	]
 }

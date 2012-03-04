@@ -12,7 +12,7 @@
 // First QRCode is rendered to a canvas.
 // The canvas is then turned to an image PNG
 // before being returned as an <img> tag.
-function showQRCode(text) {
+function showQRCode(text, version, errorCorrectLevel, canvasSize) {
 
   
   var dotsize = 5;  // size of box drawn on canvas
@@ -20,15 +20,43 @@ function showQRCode(text) {
   var black = "rgb(0,0,0)";
   var white = "rgb(255,255,255)";
   var QRCodeVersion = 10; // 1-40 see http://www.denso-wave.com/qrcode/qrgene2-e.html
+  if(version!=undefined && version>=1 && version<=19)
+  {
+	QRCodeVersion = version;
+  }
+  
+	// QR Code Error Correction Capability 
+	// Higher levels improves error correction capability while decreasing the amount of data QR Code size.
+	// QRErrorCorrectLevel.L (5%) QRErrorCorrectLevel.M (15%) QRErrorCorrectLevel.Q (25%) QRErrorCorrectLevel.H (30%)
+	// eg. L can survive approx 5% damage...etc.
+	var qrErrCorrectLevel = QRErrorCorrectLevel.L;
+	if(errorCorrectLevel!=undefined)
+	{
+		switch(errorCorrectLevel)
+		{
+			case "L":
+			case "l":
+				qrErrCorrectLevel = QRErrorCorrectLevel.L;
+				break;
+			case "M":
+			case "m":
+				qrErrCorrectLevel = QRErrorCorrectLevel.M;
+				break;
+			case "Q":
+			case "q":
+				qrErrCorrectLevel = QRErrorCorrectLevel.Q;
+				break;
+			case "H":
+			case "h":
+				qrErrCorrectLevel = QRErrorCorrectLevel.H;
+				break;
+		}
+	}
 	
 	var canvas=document.createElement('canvas');
 	var qrCanvasContext = canvas.getContext('2d');
   try {
-    // QR Code Error Correction Capability 
-    // Higher levels improves error correction capability while decreasing the amount of data QR Code size.
-    // QRErrorCorrectLevel.L (5%) QRErrorCorrectLevel.M (15%) QRErrorCorrectLevel.Q (25%) QRErrorCorrectLevel.H (30%)
-    // eg. L can survive approx 5% damage...etc.
-    var qr = new QRCode(QRCodeVersion, QRErrorCorrectLevel.L); 
+    var qr = new QRCode(QRCodeVersion, qrErrCorrectLevel); 
    	qr.addData(text);
    	qr.make();
    }
@@ -40,8 +68,15 @@ function showQRCode(text) {
   }
     
   var qrsize = qr.getModuleCount();
- 	canvas.setAttribute('height',(qrsize * dotsize) + padding);
- 	canvas.setAttribute('width',(qrsize * dotsize) + padding);
+	if(canvasSize==undefined)
+	{
+		canvasSize = 295;
+	}
+ 	canvas.setAttribute('height',canvasSize);
+ 	canvas.setAttribute('width',canvasSize);
+
+	dotsize = Math.max(1, Math.floor((canvasSize-padding)/qrsize));
+	padding = canvasSize - dotsize*qrsize
  	var shiftForPadding = padding/2;
  	if (canvas.getContext){
  		for (var r = 0; r < qrsize; r++) {
