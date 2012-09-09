@@ -15,8 +15,6 @@
 function showQRCode(text, version, errorCorrectLevel, canvasSize) {
 
   
-  var dotsize = 5;  // size of box drawn on canvas
-  var padding = 10; // (white area around your QRCode)
   var black = "rgb(0,0,0)";
   var white = "rgb(255,255,255)";
   var QRCodeVersion = 10; // 1-40 see http://www.denso-wave.com/qrcode/qrgene2-e.html
@@ -67,7 +65,10 @@ function showQRCode(text, version, errorCorrectLevel, canvasSize) {
     return errorChild;
   }
     
+  var margin = 4;//http://www.qrcode.com/en/qrgene4.html requires at least 4 modules around the code
   var qrsize = qr.getModuleCount();
+  var qrSizeWithMargin = qrsize + 2*margin;
+  var qrSizeWith1SideMargin = qrsize + margin;
 	if(canvasSize==undefined)
 	{
 		canvasSize = 295;
@@ -75,16 +76,23 @@ function showQRCode(text, version, errorCorrectLevel, canvasSize) {
  	canvas.setAttribute('height',canvasSize);
  	canvas.setAttribute('width',canvasSize);
 
-	dotsize = Math.max(1, Math.floor((canvasSize-padding)/qrsize));
-	padding = canvasSize - dotsize*qrsize
- 	var shiftForPadding = padding/2;
+	var dotsize = Math.max(1, Math.floor(canvasSize/qrSizeWithMargin));
+	
+	var padding = canvasSize - dotsize*qrSizeWithMargin
+ 	var shiftForPadding = Math.floor(padding/2);
  	if (canvas.getContext){
- 		for (var r = 0; r < qrsize; r++) {
- 			for (var c = 0; c < qrsize; c++) {
- 				if (qr.isDark(r, c))
+ 		for (var r = 0; r < qrSizeWithMargin; r++)
+		{
+ 			for (var c = 0; c < qrSizeWithMargin; c++)
+			{	
+				if(r<margin || c<margin || r>=qrSizeWith1SideMargin || c>=qrSizeWith1SideMargin)
+ 					qrCanvasContext.fillStyle = white;  
+ 				else if (qr.isDark(r-margin, c-margin))
  					qrCanvasContext.fillStyle = black;  
  				else
- 					qrCanvasContext.fillStyle = white;  
+ 					qrCanvasContext.fillStyle = white; 
+					
+				qrCanvasContext.strokeStyle = black;
  				qrCanvasContext.fillRect ((c*dotsize) +shiftForPadding,(r*dotsize) + shiftForPadding,dotsize,dotsize);   // x, y, w, h
  			}	
  		}
