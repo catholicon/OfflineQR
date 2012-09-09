@@ -6,6 +6,8 @@
 	</script>
     <script type="text/javascript" src="html5-qrcode.js">
 	</script>
+    <script type="text/javascript" src="utf8.js">
+	</script>
 	<script type="text/javascript">
 		if(addon)//available as experimental feature for trusted panel source files in jetpack sdk
 		{
@@ -19,6 +21,7 @@
 		}
 		function updateQRCode(text, version, errorCorrectLevel)
 		{
+			text = Utf8.encode(text);
 			var element = document.getElementById("qrcode");
 
 			if(element)
