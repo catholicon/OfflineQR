@@ -7,5 +7,6 @@ Given the general nature, I intend to extend it to chrome extension (and then pr
 Credits:
 * QR code generator by Kazuhiko Arase
 * rendering qr code generated from above on html5 canvas by Amanuel Tewolde
+* JS based utf8 encoding from http://www.webtoolkit.info/javascript-utf8.html
 
 AMO listing page: https://addons.mozilla.org/en-US/firefox/addon/offline-qr-generator/
