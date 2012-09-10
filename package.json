@@ -8,16 +8,16 @@
     "description": "a basic add-on to generate QR code on html5 canvas",
 	"preferences": [
 		{
-			"name": "QRCodeVersion",
-			"title": "QR-Code Version (1-19)",
-			"type": "integer",
-			"value": 10
-		},
-		{
 			"name": "QRErrorCorrectLevel",
 			"title": "QR-Code Error Correct Level (L, M, Q or H)",
 			"type": "string",
 			"value": "L"
+		},
+		{
+			"name": "QRBlockSize",
+			"title": "Block size in pixel (1-5)",
+			"type": "integer",
+			"value": 3
 		}
 	]
 }

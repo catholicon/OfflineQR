@@ -18,7 +18,7 @@ function showQRCode(text, version, errorCorrectLevel, canvasSize) {
   var black = "rgb(0,0,0)";
   var white = "rgb(255,255,255)";
   var QRCodeVersion = 10; // 1-40 see http://www.denso-wave.com/qrcode/qrgene2-e.html
-  if(version!=undefined && version>=1 && version<=19)
+  if(version!=undefined && version>=1 && version<=40)
   {
 	QRCodeVersion = version;
   }
@@ -65,10 +65,10 @@ function showQRCode(text, version, errorCorrectLevel, canvasSize) {
     return errorChild;
   }
     
-  var margin = 4;//http://www.qrcode.com/en/qrgene4.html requires at least 4 modules around the code
-  var qrsize = qr.getModuleCount();
-  var qrSizeWithMargin = qrsize + 2*margin;
-  var qrSizeWith1SideMargin = qrsize + margin;
+	var margin = 4;//http://www.qrcode.com/en/qrgene4.html requires at least 4 modules around the code
+	var qrsize = qr.getModuleCount();
+	var qrSizeWithMargin = qrsize + 2*margin;
+	var qrSizeWith1SideMargin = qrsize + margin;
 	if(canvasSize==undefined)
 	{
 		canvasSize = 295;

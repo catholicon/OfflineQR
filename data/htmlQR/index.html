@@ -15,64 +15,46 @@
 			{
 				if(payloadFromAddon["event"]=="showQR")
 				{
-					updateQRCode(payloadFromAddon["text"], payloadFromAddon["version"], payloadFromAddon["errorCorrectLevel"], 295);
+					updateQRCode(payloadFromAddon["text"], payloadFromAddon["version"], payloadFromAddon["errorCorrectLevel"], payloadFromAddon["panelSize"]-5);
 				}
 			});
 		}
-		function updateQRCode(text, version, errorCorrectLevel)
+		
+		var pendingPayloadFromAddon;
+		function updateQRCode(text, version, errorCorrectLevel, canvasSize)
 		{
-			text = Utf8.encode(text);
 			var element = document.getElementById("qrcode");
 
 			if(element)
 			{
 				if(element.lastChild)
-				  element.replaceChild(showQRCode(text, version, errorCorrectLevel), element.lastChild);
+				  element.replaceChild(showQRCode(text, version, errorCorrectLevel, canvasSize), element.lastChild);
 				else
-				  element.appendChild(showQRCode(text, version, errorCorrectLevel));
+				  element.appendChild(showQRCode(text, version, errorCorrectLevel, canvasSize));
+				  
+				 element.style.width = canvasSize;
+				 element.style.height = canvasSize;
 			}
 			else
 			{
-				textFromAddon = text;
+				pendingPayloadFromAddon = {"text": text, "version": version, "errorCorrectLevel": errorCorrectLevel, "canvasSize": canvasSize};
 			}
 		}
 		function onLoad()
 		{
-			if(textFromAddon)
+			if(pendingPayloadFromAddon)
 			{
-				updateQRCode(textFromAddon);
-				textFromAddon = undefined;
-			}
-			else
-			{
-				var url=document.URL;
-				var spliturl=url.split("?");
-				var paramstr = "";
-				if(spliturl.length>1)
-				{
-					paramstr = spliturl.splice(1).join("?");
-				}
-				var splitparams = paramstr.split("&");
-				for(var i=0; i<splitparams.length; i++)
-				{
-					var param = splitparams[i];
-					var splitparam = param.split("=");
-					if(splitparam.length==2)
-					{
-						var name=splitparam[0];
-						var value=unescape(splitparam[1]);
-						if(name=="loadText")
-						{
-							updateQRCode(value);
-							break;
-						}
-					}
-				}
+				updateQRCode(pendingPayloadFromAddon["text"],
+							pendingPayloadFromAddon["version"],
+							pendingPayloadFromAddon["errorCorrectLevel"],
+							pendingPayloadFromAddon["canvasSize"]
+							);
+				pendingPayloadFromAddon = undefined;
 			}
 		}
 	</script>
   </head>
-  <body onload="onLoad()" style="margin: 0px; width: 300px">
+  <body onload="onLoad()" style="margin: 0px;">
   <!-- This is where our QRCode will appear in. -->
     <div id="qrcode"></div>
   </body>
