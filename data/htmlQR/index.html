@@ -32,8 +32,8 @@
 				else
 				  element.appendChild(showQRCode(text, version, errorCorrectLevel, canvasSize));
 				  
-				 element.style.width = canvasSize;
-				 element.style.height = canvasSize;
+				 element.style.width = "100%";
+				 element.style.height = "100%";
 			}
 			else
 			{
@@ -54,8 +54,8 @@
 		}
 	</script>
   </head>
-  <body onload="onLoad()" style="margin: 0px;">
+  <body onload="onLoad()" style="margin:0px;">
   <!-- This is where our QRCode will appear in. -->
-    <div id="qrcode"></div>
+    <div id="qrcode" style="line-height:0"></div>
   </body>
 </html>
