@@ -54,6 +54,3 @@ function getModuleCountForVersion(level)
 {
 	return versionToModuleMap[level-1];
 }
-
-exports.getMinQRVersion = getMinQRVersion;
-exports.getModuleCountForVersion = getModuleCountForVersion;

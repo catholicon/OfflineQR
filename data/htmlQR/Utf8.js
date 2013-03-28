@@ -66,6 +66,3 @@ var Utf8 = {
 	}
  
 }
-
-exports.encode = Utf8.encode;
-exports.decode = Utf8.decode;

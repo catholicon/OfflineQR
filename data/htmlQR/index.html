@@ -6,7 +6,9 @@
 	</script>
     <script type="text/javascript" src="html5-qrcode.js">
 	</script>
-    <script type="text/javascript" src="utf8.js">
+    <script type="text/javascript" src="Utf8.js">
+	</script>
+    <script type="text/javascript" src="QRCapacity.js">
 	</script>
 	<script type="text/javascript">
 		if(addon)//available as experimental feature for trusted panel source files in jetpack sdk
@@ -15,29 +17,56 @@
 			{
 				if(payloadFromAddon["event"]=="showQR")
 				{
-					updateQRCode(payloadFromAddon["text"], payloadFromAddon["version"], payloadFromAddon["errorCorrectLevel"], payloadFromAddon["panelSize"]-5);
+					updateQRCode(payloadFromAddon["text"], payloadFromAddon["errorCorrectLevel"], payloadFromAddon["blockSize"]);
 				}
 			});
 		}
 		
-		var pendingPayloadFromAddon;
-		function updateQRCode(text, version, errorCorrectLevel, canvasSize)
+		function dispatchRequiredPanelSize(size)
 		{
+			if(addon)
+			{
+				addon.port.emit("resizePanel", {"size": size});
+			}
+		}
+		
+		var pendingPayloadFromAddon;
+		function updateQRCode(text, errorCorrectLevel, blockSize)
+		{
+			text = Utf8.encode(text);
+			
+			var reqVersion = -1;
+			try
+			{
+				reqVersion = getMinQRVersion(text.length, errorCorrectLevel);
+			}
+			catch(err)
+			{
+				console.error(err);
+				return;
+			}			
+	
+			var modCount = getModuleCountForVersion(reqVersion);
+			
+			var canvasSize = Math.min(400, (modCount+8)*blockSize);
+			
 			var element = document.getElementById("qrcode");
 
 			if(element)
 			{
+				dispatchRequiredPanelSize(canvasSize);
+
 				if(element.lastChild)
-				  element.replaceChild(showQRCode(text, version, errorCorrectLevel, canvasSize), element.lastChild);
+				  element.replaceChild(showQRCode(text, reqVersion, errorCorrectLevel, canvasSize), element.lastChild);
 				else
-				  element.appendChild(showQRCode(text, version, errorCorrectLevel, canvasSize));
+				  element.appendChild(showQRCode(text, reqVersion, errorCorrectLevel, canvasSize));
 				  
 				 element.style.width = "100%";
 				 element.style.height = "100%";
 			}
 			else
 			{
-				pendingPayloadFromAddon = {"text": text, "version": version, "errorCorrectLevel": errorCorrectLevel, "canvasSize": canvasSize};
+				pendingPayloadFromAddon = {"text": text, "errorCorrectLevel": errorCorrectLevel, "blockSize": blockSize};
 			}
 		}
 		function onLoad()
@@ -45,9 +74,8 @@
 			if(pendingPayloadFromAddon)
 			{
 				updateQRCode(pendingPayloadFromAddon["text"],
-							pendingPayloadFromAddon["version"],
 							pendingPayloadFromAddon["errorCorrectLevel"],
-							pendingPayloadFromAddon["canvasSize"]
+							pendingPayloadFromAddon["blockSize"]
 							);
 				pendingPayloadFromAddon = undefined;
 			}
