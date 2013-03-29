@@ -10,8 +10,23 @@
 	</script>
     <script type="text/javascript" src="QRCapacity.js">
 	</script>
+    <script type="text/javascript" src="FileSaver.min.js">
+	</script>
 	<script type="text/javascript">
-		if(addon)//available as experimental feature for trusted panel source files in jetpack sdk
+		var QueryString = function () {
+			var query_string = {};
+			var query = document.location.search.substring(1);
+			var vars = query.split("&");
+			for (var i=0;i<vars.length;i++)
+			{
+				var pair = vars[i].split("=");
+				query_string[pair[0]] = pair[1];
+			} 
+			return query_string;
+		} ();
+		var isRunningInAddon = QueryString["isAddon"];
+	
+		if(isRunningInAddon && addon)//available as experimental feature for trusted panel source files in jetpack sdk
 		{
 			addon.port.on("myAddonScriptEvent", function(payloadFromAddon)
 			{
@@ -22,17 +37,23 @@
 			});
 		}
 		
-		function dispatchRequiredPanelSize(size)
+		function dispatchRequiredPanelSize()
 		{
-			if(addon)
+			if(isRunningInAddon && addon)
 			{
-				addon.port.emit("resizePanel", {"size": size});
+				//var docEle = document.documentElement;
+				var docEle = document.getElementById("doc");
+				var height = docEle.scrollHeight;
+				var width = docEle.scrollWidth;
+				
+				addon.port.emit("resizePanel", {"height": height, "width": width});
 			}
 		}
 		
-		var pendingPayloadFromAddon;
+		var pendingPayload;
 		function updateQRCode(text, errorCorrectLevel, blockSize)
 		{
+			updateTextAreaText(text);
 			text = Utf8.encode(text);
 			
 			var reqVersion = -1;
@@ -54,36 +75,114 @@
 
 			if(element)
 			{
-				dispatchRequiredPanelSize(canvasSize);
-
 				if(element.lastChild)
 				  element.replaceChild(showQRCode(text, reqVersion, errorCorrectLevel, canvasSize), element.lastChild);
 				else
 				  element.appendChild(showQRCode(text, reqVersion, errorCorrectLevel, canvasSize));
-				  
-				 element.style.width = "100%";
-				 element.style.height = "100%";
-			}
+
+				dispatchRequiredPanelSize();
+			 }
 			else
 			{
-				pendingPayloadFromAddon = {"text": text, "errorCorrectLevel": errorCorrectLevel, "blockSize": blockSize};
+				pendingPayload = {"text": text, "errorCorrectLevel": errorCorrectLevel, "blockSize": blockSize};
 			}
 		}
 		function onLoad()
 		{
-			if(pendingPayloadFromAddon)
+			var textElement = document.getElementById("text");
+			if(textElement)
 			{
-				updateQRCode(pendingPayloadFromAddon["text"],
-							pendingPayloadFromAddon["errorCorrectLevel"],
-							pendingPayloadFromAddon["blockSize"]
-							);
-				pendingPayloadFromAddon = undefined;
+				textElement.style.resize = (isRunningInAddon?"none":"both");
+				
+				if(QueryString["loadText"])
+				{
+					textElement.value = decodeURIComponent(decodeURIComponent(QueryString["loadText"]));
+					handleTAChange();
+				}
 			}
+			
+			var openElement = document.getElementById("openLink");
+			if(openElement)
+			{
+				openElement.style.display = (isRunningInAddon?"block":"none");
+			}
+
+			if(pendingPayload)
+			{
+				updateQRCode(pendingPayload["text"],
+							pendingPayload["errorCorrectLevel"],
+							pendingPayload["blockSize"]
+							);
+				pendingPayload = undefined;
+			}
+		}
+		
+		function updateTextAreaText(text)
+		{
+			var textArea = document.getElementById("text");
+			if(textArea)
+			{
+				var textAreaText = textArea.value;
+				if(textAreaText!=text)
+				{
+					textArea.value = text;
+				}
+			}
+		}
+		
+		function handleSaveClick()
+		{
+			var element = document.getElementById("qrcode");
+			if(element)
+			{
+				if(element.lastChild)
+				{
+					var canvas = element.lastChild;
+					canvas.toBlob(function(blob) {
+						saveAs(blob, "QR.png");
+					});
+				}
+			}
+		}
+		
+		function handleOpenClick()
+		{
+			var textArea = document.getElementById("text");
+			if(textArea && addon)
+			{
+				addon.port.emit("openNew", {"text": encodeURIComponent(encodeURIComponent(textArea.value))});
+			}
+		}
+		
+		function handleTAChange()
+		{
+			var textArea = document.getElementById("text");
+			if(textArea)
+			{
+				var qrLevel = QueryString["errorCorrectLevel"];
+				if(qrLevel==undefined)qrLevel = "L";
+				var blockSize = QueryString["blockSize"];
+				if(blockSize==undefined)blockSize = 3;
+
+				updateQRCode(textArea.value, qrLevel, blockSize);
+			}
+		}
+		
+		function handleTAResize()
+		{
+			dispatchRequiredPanelSize();
 		}
 	</script>
   </head>
-  <body onload="onLoad()" style="margin:0px;">
-  <!-- This is where our QRCode will appear in. -->
-    <div id="qrcode" style="line-height:0"></div>
+  <body id="doc" onload="onLoad()" style="margin:0px;">
+  <div>
+	<!-- This is where our QRCode will appear in. -->
+    <div id="qrcode" style="line-height:0;"></div>
+	<br/>
+	<a id="saveLink" href="javascript:void(0);" onclick="handleSaveClick()"><img src="assets/grey_save.png" alt="Save"/></a>
+	<a id="openLink" href="javascript:void(0);" onclick="handleOpenClick()" style="float:right"><img src="assets/open_new.png" alt="Open"/></a>
+	<br/>
+	<textarea id="text" onchange="handleTAChange()" style="resize:none;" onresize="handleTAResize()"></textarea>
+  </div>
   </body>
 </html>

@@ -97,11 +97,7 @@ function showQRCode(text, version, errorCorrectLevel, canvasSize) {
  			}	
  		}
  	}
-
- 	var imgElement = document.createElement("img");
- 	imgElement.src = canvas.toDataURL("image/png");
-
- 	return imgElement;
-    
+	
+	return canvas;
 }
 
