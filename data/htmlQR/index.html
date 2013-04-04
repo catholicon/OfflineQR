@@ -37,15 +37,13 @@
 			});
 		}
 		
-		function dispatchRequiredPanelSize()
+		function dispatchRequiredPanelSize(canvasSize)
 		{
 			if(isRunningInAddon && addon)
 			{
-				//var docEle = document.documentElement;
-				var docEle = document.getElementById("doc");
-				var height = docEle.scrollHeight;
-				var width = docEle.scrollWidth;
-				
+				var height = canvasSize + 45 /*icon area*/ + 55 /*text area*/
+				var width = Math.max(200, canvasSize);
+
 				addon.port.emit("resizePanel", {"height": height, "width": width});
 			}
 		}
@@ -82,7 +80,7 @@
 				  
 				element.style.width = (canvasSize + "px");
 
-				dispatchRequiredPanelSize();
+				dispatchRequiredPanelSize(canvasSize);
 			 }
 			else
 			{
@@ -182,14 +180,12 @@
 	</script>
   </head>
   <body id="doc" onload="onLoad()" style="margin:0px;">
-  <div>
 	<!-- This is where our QRCode will appear in. -->
     <div id="qrcode" style="line-height:0;margin-left:auto;margin-right:auto"></div>
 	<br/>
 	<a id="saveLink" href="javascript:void(0);" onclick="handleSaveClick()"><img src="assets/grey_save.png" alt="Save"/></a>
 	<a id="openLink" href="javascript:void(0);" onclick="handleOpenClick()" style="float:right"><img src="assets/open_new.png" alt="Open"/></a>
 	<br/>
-	<textarea id="text" onkeyup="handleTAChange()" style="resize:none;"></textarea>
-  </div>
+	<textarea id="text" onkeyup="handleTAChange()" style="resize:none;height:100%;width:100%;-moz-box-sizing:border-box;box-sizing:border-box"></textarea>
   </body>
 </html>
