@@ -41,9 +41,15 @@
 		{
 			if(isRunningInAddon && addon)
 			{
-				var height = canvasSize + 45 /*icon area*/ + 55 /*text area*/
+				var nonQRSectionEle = document.getElementById('nonQRSection');
+				var nonQRSectionEleHeight = 45 /*icon area*/ + 55 /*text area*/;//empirical value on my laptop
+				if(nonQRSectionEle)
+				{
+					nonQRSectionEleHeight = nonQRSectionEle.clientHeight;
+				}
+				var height = canvasSize + nonQRSectionEleHeight;
 				var width = Math.max(200, canvasSize);
-
+				
 				addon.port.emit("resizePanel", {"height": height, "width": width});
 			}
 		}
@@ -198,13 +204,17 @@
 		}
 	</script>
   </head>
-  <body id="doc" onload="onLoad()" style="margin:0px;">
+  <body id="doc" onload="onLoad()" style="margin:0px">
 	<!-- This is where our QRCode will appear in. -->
     <div id="qrcode" style="line-height:0;margin-left:auto;margin-right:auto"></div>
-	<br/>
-	<a id="saveLink" href="javascript:void(0);" onclick="handleSaveClick()"><img src="assets/grey_save.png" alt="Save"/></a>
-	<a id="openLink" href="javascript:void(0);" onclick="handleOpenClick()" style="float:right"><img src="assets/open_new.png" alt="Open"/></a>
-	<br/>
-	<textarea id="text" onkeyup="handleTAChange()" style="resize:none;height:100%;width:100%;-moz-box-sizing:border-box;box-sizing:border-box"></textarea>
+	<div id="nonQRSection">
+		<div id="usefulLinks">
+			<a id="saveLink" href="javascript:void(0);" onclick="handleSaveClick()"><img src="assets/grey_save.png" alt="Save"/></a>
+			<a id="openLink" href="javascript:void(0);" onclick="handleOpenClick()" style="float:right"><img src="assets/open_new.png" alt="Open"/></a>
+		</div>
+		<div id="textArea">
+			<textarea id="text" onkeyup="handleTAChange()" style="resize:none;height:100%;width:100%;-moz-box-sizing:border-box;box-sizing:border-box"></textarea>
+		</div>
+	</div>
   </body>
 </html>
