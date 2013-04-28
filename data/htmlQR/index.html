@@ -54,14 +54,14 @@
 		{
 			if(!errorCorrectLevel)
 			{
-				var qrLevel = (lastUpdateQRCodeParams["errorCorrectLevel"])?
+				var qrLevel = (lastUpdateQRCodeParams && lastUpdateQRCodeParams["errorCorrectLevel"])?
 											lastUpdateQRCodeParams["errorCorrectLevel"]:
 											QueryString["errorCorrectLevel"];
 				if(qrLevel==undefined)qrLevel = "L";
 			}
 			if(!blockSize)
 			{
-				var blockSize = (lastUpdateQRCodeParams["blockSize"])?
+				var blockSize = (lastUpdateQRCodeParams && lastUpdateQRCodeParams["blockSize"])?
 											lastUpdateQRCodeParams["blockSize"]:
 											QueryString["blockSize"];
 				if(blockSize==undefined)blockSize = 3;
