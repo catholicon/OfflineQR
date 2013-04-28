@@ -49,8 +49,24 @@
 		}
 		
 		var pendingPayload;
+		var lastUpdateQRCodeParams;
 		function updateQRCode(text, errorCorrectLevel, blockSize)
 		{
+			if(!errorCorrectLevel)
+			{
+				var qrLevel = (lastUpdateQRCodeParams["errorCorrectLevel"])?
+											lastUpdateQRCodeParams["errorCorrectLevel"]:
+											QueryString["errorCorrectLevel"];
+				if(qrLevel==undefined)qrLevel = "L";
+			}
+			if(!blockSize)
+			{
+				var blockSize = (lastUpdateQRCodeParams["blockSize"])?
+											lastUpdateQRCodeParams["blockSize"]:
+											QueryString["blockSize"];
+				if(blockSize==undefined)blockSize = 3;
+			}
+		
 			updateTextAreaText(text);
 			text = Utf8.encode(text);
 			
@@ -81,6 +97,8 @@
 				element.style.width = (canvasSize + "px");
 
 				dispatchRequiredPanelSize(canvasSize);
+				
+				lastUpdateQRCodeParams = {"errorCorrectLevel": errorCorrectLevel, "blockSize": blockSize};
 			 }
 			else
 			{
@@ -156,25 +174,26 @@
 		
 		function updateQRCodeWithTA()
 		{
+			clearTAChangeTimer();
 			var textArea = document.getElementById("text");
 			if(textArea)
 			{
-				var qrLevel = QueryString["errorCorrectLevel"];
-				if(qrLevel==undefined)qrLevel = "L";
-				var blockSize = QueryString["blockSize"];
-				if(blockSize==undefined)blockSize = 3;
-
-				updateQRCode(textArea.value, qrLevel, blockSize);
+				updateQRCode(textArea.value);
 			}
 		}
 		
 		var taChangeTimer;
-		function handleTAChange()
+		function clearTAChangeTimer()
 		{
-			if(taChangeTimer)
+			if(taChangeTimer && taChangeTimer!=-1)
 			{
 				clearInterval(taChangeTimer);
+				taChangeTimer = -1;
 			}
+		}
+		function handleTAChange()
+		{
+			clearTAChangeTimer();
 			taChangeTimer = setInterval(function(){updateQRCodeWithTA()}, 200);
 		}
 	</script>
