@@ -110,6 +110,11 @@
 											QueryString["errorCorrectLevel"];
 				if(errorCorrectLevel==undefined)errorCorrectLevel = "L";
 			}
+
+			if(isNaN(blockSize) || blockSize<1 || blockSize>10)
+			{
+				blockSize = undefined;
+			}
 			if(!blockSize)
 			{
 				blockSize = (lastUpdateQRCodeParams && lastUpdateQRCodeParams["blockSize"])?
@@ -232,10 +237,22 @@
 		
 		function handleZoomIn()
 		{
+			if(lastUpdateQRCodeParams)lastUpdateQRCodeParams["blockSize"]++;
+			updateQRCodeWithTA();
+			saveZoomPreference();
 		}
-		
 		function handleZoomOut()
 		{
+			if(lastUpdateQRCodeParams)lastUpdateQRCodeParams["blockSize"]--;
+			updateQRCodeWithTA();
+			saveZoomPreference();
+		}
+		function saveZoomPreference()
+		{
+			if(isRunningInAddon && addon)
+			{
+				addon.port.emit("setBlockSize", lastUpdateQRCodeParams["blockSize"]);
+			}
 		}
 		
 		function handleShowExtraUI(toShow)
@@ -268,7 +285,7 @@
 			}
 			if(isRunningInAddon && addon)
 			{
-				addon.port.emit("setPreferences", {"showExtraUI": toShow});
+				addon.port.emit("showExtraUI", toShow);
 			}
 			
 			dispatchRequiredPanelSize();
@@ -315,12 +332,10 @@
 						<a id="saveLink" class="control" title="Save" href="javascript:void(0);" onclick="handleSaveClick()"><i class="icon-save"></i></a>
 						<a id="openLink" class="control" title="Open in a new tab" href="javascript:void(0);" onclick="handleOpenClick()"><i class="icon-resize-full"></i></a>
 					</div>
-					<!--- ->
 					<div class="controlsGroup">
 						<a id="zoomIn" class="control" title="Zoom In" href="javascript:void(0);" onclick="handleZoomIn()"><i class="icon-zoom-in"></i></a>
 						<a id="zoomOut" class="control" title="Zoom Out"  href="javascript:void(0);" onclick="handleZoomOut()"><i class="icon-zoom-out"></i></a>
 					</div>
-					<!- --->
 				</div>
 			</div>
 			<div class="extraUI" id="extraUI">
