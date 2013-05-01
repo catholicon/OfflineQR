@@ -2,6 +2,8 @@
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<link rel="stylesheet" type="text/css" href="assets/font-awesome/css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="qrPanel.css">
     <script type="text/javascript" src="qrcode.js">
 	</script>
     <script type="text/javascript" src="html5-qrcode.js">
@@ -32,46 +34,97 @@
 			{
 				if(payloadFromAddon["event"]=="showQR")
 				{
-					updateQRCode(payloadFromAddon["text"], payloadFromAddon["errorCorrectLevel"], payloadFromAddon["blockSize"]);
+					updateQRCode(payloadFromAddon["text"], payloadFromAddon["errorCorrectLevel"], payloadFromAddon["blockSize"], payloadFromAddon["showExtraUI"]);
 				}
 			});
 		}
 		
+		var lastRequestedPanelSize;
+		var panelResizeTimer;
+		function clearPanelResizeTimer()
+		{
+			if(panelResizeTimer && panelResizeTimer!=-1)
+			{
+				clearInterval(panelResizeTimer);
+				panelResizeTimer = -1;
+			}
+		}
 		function dispatchRequiredPanelSize(canvasSize)
 		{
+			clearPanelResizeTimer();
+		
 			if(isRunningInAddon && addon)
 			{
+				if(canvasSize==undefined)
+				{
+					var qrEle = document.getElementById('qrcode');
+					if(qrEle)
+					{
+						canvasSize = qrEle.scrollWidth;
+					}
+				}
+				
+				var textAreaEle = document.getElementById("text");
+				if(textAreaEle)
+				{
+					textAreaEle.style.height = (canvasSize + "px");
+				}
+				
 				var nonQRSectionEle = document.getElementById('nonQRSection');
-				var nonQRSectionEleHeight = 45 /*icon area*/ + 55 /*text area*/;//empirical value on my laptop
+				var nonQRSectionEleWidth = 0;
+				var nonQRSectionEleHeight = 0;
 				if(nonQRSectionEle)
 				{
-					nonQRSectionEleHeight = nonQRSectionEle.clientHeight;
+					nonQRSectionEleWidth = nonQRSectionEle.scrollWidth;
+					nonQRSectionEleHeight = nonQRSectionEle.scrollHeight;
 				}
-				var height = canvasSize + nonQRSectionEleHeight;
-				var width = Math.max(200, canvasSize);
+
+				var height = Math.max(canvasSize, nonQRSectionEleHeight) + 12/*body margin*/;				
+				var width = nonQRSectionEleWidth + canvasSize + 10/*body margin*/;
 				
-				addon.port.emit("resizePanel", {"height": height, "width": width});
+				if(isNaN(height) || isNaN(width))
+				{
+					console.warn("couldn't calculate panel height/width for canvasSize: " + canvasSize);
+				}
+				else if(lastRequestedPanelSize && lastRequestedPanelSize["height"]==height && lastRequestedPanelSize["width"]==width)
+				{
+					addon.port.emit("resizePanel", {"height": height, "width": width});
+					lastRequestedPanelSize = undefined;
+				}
+				else
+				{
+					lastRequestedPanelSize = {"height": height, "width": width};
+					panelResizeTimer = setInterval(function(){dispatchRequiredPanelSize(canvasSize)}, 100);
+				}
 			}
 		}
 		
 		var pendingPayload;
 		var lastUpdateQRCodeParams;
-		function updateQRCode(text, errorCorrectLevel, blockSize)
+		function updateQRCode(text, errorCorrectLevel, blockSize, showExtraUI)
 		{
 			if(!errorCorrectLevel)
 			{
-				var qrLevel = (lastUpdateQRCodeParams && lastUpdateQRCodeParams["errorCorrectLevel"])?
+				errorCorrectLevel = (lastUpdateQRCodeParams && lastUpdateQRCodeParams["errorCorrectLevel"])?
 											lastUpdateQRCodeParams["errorCorrectLevel"]:
 											QueryString["errorCorrectLevel"];
-				if(qrLevel==undefined)qrLevel = "L";
+				if(errorCorrectLevel==undefined)errorCorrectLevel = "L";
 			}
 			if(!blockSize)
 			{
-				var blockSize = (lastUpdateQRCodeParams && lastUpdateQRCodeParams["blockSize"])?
+				blockSize = (lastUpdateQRCodeParams && lastUpdateQRCodeParams["blockSize"])?
 											lastUpdateQRCodeParams["blockSize"]:
 											QueryString["blockSize"];
 				if(blockSize==undefined)blockSize = 3;
 			}
+			
+			if(showExtraUI==undefined)
+			{
+				showExtraUI = (lastUpdateQRCodeParams && lastUpdateQRCodeParams["showExtraUI"]);
+				if(showExtraUI==undefined)showExtraUI = true;
+			}
+
+			handleShowExtraUI(showExtraUI);
 		
 			updateTextAreaText(text);
 			text = Utf8.encode(text);
@@ -104,11 +157,11 @@
 
 				dispatchRequiredPanelSize(canvasSize);
 				
-				lastUpdateQRCodeParams = {"errorCorrectLevel": errorCorrectLevel, "blockSize": blockSize};
+				lastUpdateQRCodeParams = {"errorCorrectLevel": errorCorrectLevel, "blockSize": blockSize, "showExtraUI": showExtraUI};
 			 }
 			else
 			{
-				pendingPayload = {"text": text, "errorCorrectLevel": errorCorrectLevel, "blockSize": blockSize};
+				pendingPayload = {"text": text, "errorCorrectLevel": errorCorrectLevel, "blockSize": blockSize, "showExtraUI": showExtraUI};
 			}
 		}
 		function onLoad()
@@ -128,14 +181,21 @@
 			var openElement = document.getElementById("openLink");
 			if(openElement)
 			{
-				openElement.style.display = (isRunningInAddon?"block":"none");
+				openElement.style.display = (isRunningInAddon?"inline-block":"none");
 			}
-
+			
+			var wrapEle = document.getElementById("wrap");
+			if(wrapEle)
+			{
+				wrapEle.style.display = (isRunningInAddon?"-moz-box":"block");
+			}
+			
 			if(pendingPayload)
 			{
 				updateQRCode(pendingPayload["text"],
 							pendingPayload["errorCorrectLevel"],
-							pendingPayload["blockSize"]
+							pendingPayload["blockSize"],
+							pendingPayload["showExtraUI"]
 							);
 				pendingPayload = undefined;
 			}
@@ -178,6 +238,50 @@
 			}
 		}
 		
+		/*
+		function handleZoomIn()
+		{
+		}
+		
+		function handleZoomOut()
+		{
+		}
+		*/
+		
+		function handleShowExtraUI(toShow)
+		{
+			var extraUIEle = document.getElementById("extraUI");
+			var showExtraUIEle = document.getElementById("showExtraUI");
+			var hideExtraUIEle = document.getElementById("hideExtraUI");
+			
+			if(lastUpdateQRCodeParams)lastUpdateQRCodeParams["showExtraUI"] = toShow;
+			
+			if(!isRunningInAddon)
+			{
+				extraUIEle.style.display = "-moz-box";
+				showExtraUIEle.style.display = "none";
+				hideExtraUIEle.style.display = "none";
+			}
+			else if(toShow)
+			{
+				extraUIEle.style.display = "-moz-box";
+				showExtraUIEle.style.display = "none";
+				hideExtraUIEle.style.display = "inline-block";
+			}
+			else
+			{
+				extraUIEle.style.display = "none";
+				showExtraUIEle.style.display = "inline-block";
+				hideExtraUIEle.style.display = "none";
+			}
+			if(isRunningInAddon && addon)
+			{
+				addon.port.emit("setPreferences", {"showExtraUI": toShow});
+			}
+			
+			dispatchRequiredPanelSize();
+		}
+		
 		function updateQRCodeWithTA()
 		{
 			clearTAChangeTimer();
@@ -204,16 +308,36 @@
 		}
 	</script>
   </head>
-  <body id="doc" onload="onLoad()" style="margin:0px">
-	<!-- This is where our QRCode will appear in. -->
-    <div id="qrcode" style="line-height:0;margin-left:auto;margin-right:auto"></div>
-	<div id="nonQRSection">
-		<div id="usefulLinks">
-			<a id="saveLink" href="javascript:void(0);" onclick="handleSaveClick()"><img src="assets/grey_save.png" alt="Save"/></a>
-			<a id="openLink" href="javascript:void(0);" onclick="handleOpenClick()" style="float:right"><img src="assets/open_new.png" alt="Open"/></a>
-		</div>
-		<div id="textArea">
-			<textarea id="text" onkeyup="handleTAChange()" style="resize:none;height:100%;width:100%;-moz-box-sizing:border-box;box-sizing:border-box"></textarea>
+  <body id="doc" onload="onLoad()">
+	<div id="wrap" class="wrap">
+		<!-- This is where our QRCode will appear in. -->
+		<div id="qrcode" style=""></div>
+		<div id="nonQRSection">
+			<div class="hideExtraUI controlsGroup" id="hideExtraUI">
+				<a class="control" href="javascript:void(0);" onclick="handleShowExtraUI(false)"><i id="sidebarSwitch" class="icon-caret-left"></i></a>
+			</div>
+			<div class="showExtraUI controlsGroup" id="showExtraUI">
+				<a class="control" href="javascript:void(0);" onclick="handleShowExtraUI(true)"><i id="sidebarSwitch" class="icon-caret-right"></i></a>
+			</div>
+			<div class="extraUI" id="extraUI">
+				<div id="textArea" class="qrText">
+					<textarea id="text" class="qrText" onkeyup="handleTAChange()"></textarea>
+				</div>
+				<div class="controls">
+					<div class="functionalities">
+						<div class="controlsGroup">
+							<a id="saveLink" class="control" href="javascript:void(0);" onclick="handleSaveClick()"><i class="icon-save"></i></a>
+							<a id="openLink" class="control" href="javascript:void(0);" onclick="handleOpenClick()"><i class="icon-resize-full"></i></a>
+						</div>
+						<!--
+						<div class="controlsGroup">
+							<a id="zoomIn" class="control" href="javascript:void(0);" onclick="handleZoomIn()"><i class="icon-zoom-in"></i></a>
+							<a id="zoomOut" class="control" href="javascript:void(0);" onclick="handleZoomOut()"><i class="icon-zoom-out"></i></a>
+						</div>
+						-->
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
   </body>
