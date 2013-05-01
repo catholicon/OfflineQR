@@ -230,7 +230,6 @@
 			}
 		}
 		
-		/*
 		function handleZoomIn()
 		{
 		}
@@ -238,14 +237,13 @@
 		function handleZoomOut()
 		{
 		}
-		*/
 		
 		function handleShowExtraUI(toShow)
 		{
 			var extraUIEle = document.getElementById("extraUI");
 			var showExtraUIEle = document.getElementById("showExtraUI");
 			var hideExtraUIEle = document.getElementById("hideExtraUI");
-			//var functionalityEle = document.getElementById("functionality");
+			var functionalityEle = document.getElementById("functionality");
 			
 			if(lastUpdateQRCodeParams)lastUpdateQRCodeParams["showExtraUI"] = toShow;
 			
@@ -259,14 +257,14 @@
 				extraUIEle.style.display = "-moz-box";
 				showExtraUIEle.style.display = "none";
 				hideExtraUIEle.style.display = "inline-block";
-				//functionalityEle.style.display = "block";
+				functionalityEle.style.display = "block";
 			}
 			else
 			{
 				extraUIEle.style.display = "none";
 				showExtraUIEle.style.display = "inline-block";
 				hideExtraUIEle.style.display = "none";
-				//functionalityEle.style.display = "none";
+				functionalityEle.style.display = "none";
 			}
 			if(isRunningInAddon && addon)
 			{
@@ -317,12 +315,12 @@
 						<a id="saveLink" class="control" title="Save" href="javascript:void(0);" onclick="handleSaveClick()"><i class="icon-save"></i></a>
 						<a id="openLink" class="control" title="Open in a new tab" href="javascript:void(0);" onclick="handleOpenClick()"><i class="icon-resize-full"></i></a>
 					</div>
-					<!--
+					<!--- ->
 					<div class="controlsGroup">
-						<a id="zoomIn" class="control" href="javascript:void(0);" onclick="handleZoomIn()"><i class="icon-zoom-in"></i></a>
-						<a id="zoomOut" class="control" href="javascript:void(0);" onclick="handleZoomOut()"><i class="icon-zoom-out"></i></a>
+						<a id="zoomIn" class="control" title="Zoom In" href="javascript:void(0);" onclick="handleZoomIn()"><i class="icon-zoom-in"></i></a>
+						<a id="zoomOut" class="control" title="Zoom Out"  href="javascript:void(0);" onclick="handleZoomOut()"><i class="icon-zoom-out"></i></a>
 					</div>
-					-->
+					<!- --->
 				</div>
 			</div>
 			<div class="extraUI" id="extraUI">
