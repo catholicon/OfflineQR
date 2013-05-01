@@ -42,6 +42,19 @@ textarea.qrText {
 	box-sizing:border-box;
 }
 
+div.zoomGroup {
+	display: none;
+	background-color: rgba(0, 0, 0, 0.7);
+	border-radius: 4px;
+	position: fixed;
+	top: 10px;
+	left: 10px;
+}
+
+div#qrcode:hover + div.zoomGroup, div.zoomGroup:hover {
+	display: block;
+}
+
 div.controls {
 	position: relative;
 }

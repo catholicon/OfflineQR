@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<link rel="stylesheet" type="text/css" href="../assets/font-awesome/css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="assets/font-awesome/css/font-awesome.min.css">
 	<link rel="stylesheet" type="text/css" href="qrPanel.css">
     <script type="text/javascript" src="qrcode.js">
 	</script>
@@ -147,7 +147,7 @@
 	
 			var modCount = getModuleCountForVersion(reqVersion);
 			
-			var canvasSize = Math.min(400, (modCount+8)*blockSize);
+			var canvasSize = Math.max(60, Math.min(400, (modCount+8)*blockSize));
 			
 			var element = document.getElementById("qrcode");
 
@@ -237,15 +237,20 @@
 		
 		function handleZoomIn()
 		{
-			if(lastUpdateQRCodeParams)lastUpdateQRCodeParams["blockSize"]++;
-			updateQRCodeWithTA();
-			saveZoomPreference();
+			if(lastUpdateQRCodeParams)setZoomLevel(lastUpdateQRCodeParams["blockSize"]+1);
 		}
 		function handleZoomOut()
 		{
-			if(lastUpdateQRCodeParams)lastUpdateQRCodeParams["blockSize"]--;
+			if(lastUpdateQRCodeParams)setZoomLevel(lastUpdateQRCodeParams["blockSize"]-1);
+		}
+		function setZoomLevel(zoomLevel)
+		{
+			if(isNaN(zoomLevel) || zoomLevel<1 || zoomLevel>10)return;
+			
+			if(lastUpdateQRCodeParams)lastUpdateQRCodeParams["blockSize"]=zoomLevel;
 			updateQRCodeWithTA();
 			saveZoomPreference();
+			
 		}
 		function saveZoomPreference()
 		{
@@ -260,7 +265,6 @@
 			var extraUIEle = document.getElementById("extraUI");
 			var showExtraUIEle = document.getElementById("showExtraUI");
 			var hideExtraUIEle = document.getElementById("hideExtraUI");
-			var functionalityEle = document.getElementById("functionality");
 			
 			if(lastUpdateQRCodeParams)lastUpdateQRCodeParams["showExtraUI"] = toShow;
 			
@@ -274,14 +278,12 @@
 				extraUIEle.style.display = "-moz-box";
 				showExtraUIEle.style.display = "none";
 				hideExtraUIEle.style.display = "inline-block";
-				functionalityEle.style.display = "block";
 			}
 			else
 			{
 				extraUIEle.style.display = "none";
 				showExtraUIEle.style.display = "inline-block";
 				hideExtraUIEle.style.display = "none";
-				functionalityEle.style.display = "none";
 			}
 			if(isRunningInAddon && addon)
 			{
@@ -321,21 +323,19 @@
 	<div id="wrap" class="wrap">
 		<!-- This is where our QRCode will appear in. -->
 		<div id="qrcode" style=""></div>
+		<div class="zoomGroup">
+			<a id="zoomIn" class="control" title="Zoom In" href="javascript:void(0);" onclick="handleZoomIn()"><i class="icon-zoom-in"></i></a>
+			<a id="zoomOut" class="control" title="Zoom Out"  href="javascript:void(0);" onclick="handleZoomOut()"><i class="icon-zoom-out"></i></a>
+		</div>
 		<div id="nonQRSection" class="nonQRSection">
 			<div class="controls">
 				<div class="showExtraUI controlsGroup">
 					<a class="control" id="showExtraUI" title="More..." href="javascript:void(0);" onclick="handleShowExtraUI(true)"><i id="sidebarSwitch" class="icon-caret-right"></i></a>
 					<a class="control" id="hideExtraUI" title="Less..." href="javascript:void(0);" onclick="handleShowExtraUI(false)"><i id="sidebarSwitch" class="icon-caret-left"></i></a>
 				</div>
-				<div id="functionality" class="functionality">
-					<div class="controlsGroup">
-						<a id="saveLink" class="control" title="Save" href="javascript:void(0);" onclick="handleSaveClick()"><i class="icon-save"></i></a>
-						<a id="openLink" class="control" title="Open in a new tab" href="javascript:void(0);" onclick="handleOpenClick()"><i class="icon-resize-full"></i></a>
-					</div>
-					<div class="controlsGroup">
-						<a id="zoomIn" class="control" title="Zoom In" href="javascript:void(0);" onclick="handleZoomIn()"><i class="icon-zoom-in"></i></a>
-						<a id="zoomOut" class="control" title="Zoom Out"  href="javascript:void(0);" onclick="handleZoomOut()"><i class="icon-zoom-out"></i></a>
-					</div>
+				<div id="functionality" class="functionality controlsGroup">
+					<a id="saveLink" class="control" title="Save" href="javascript:void(0);" onclick="handleSaveClick()"><i class="icon-save"></i></a>
+					<a id="openLink" class="control" title="Open in a new tab" href="javascript:void(0);" onclick="handleOpenClick()"><i class="icon-resize-full"></i></a>
 				</div>
 			</div>
 			<div class="extraUI" id="extraUI">
