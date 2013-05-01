@@ -178,17 +178,9 @@
 				}
 			}
 			
-			var openElement = document.getElementById("openLink");
-			if(openElement)
-			{
-				openElement.style.display = (isRunningInAddon?"inline-block":"none");
-			}
-			
-			var wrapEle = document.getElementById("wrap");
-			if(wrapEle)
-			{
-				wrapEle.style.display = (isRunningInAddon?"-moz-box":"block");
-			}
+			document.getElementById("openLink").style.display = (isRunningInAddon?"inline-block":"none");
+			document.getElementById("wrap").style.display = (isRunningInAddon?"-moz-box":"block");
+			document.getElementById("functionality").style.position = (isRunningInAddon?"absolute":"static");
 			
 			if(pendingPayload)
 			{
@@ -253,12 +245,12 @@
 			var extraUIEle = document.getElementById("extraUI");
 			var showExtraUIEle = document.getElementById("showExtraUI");
 			var hideExtraUIEle = document.getElementById("hideExtraUI");
+			//var functionalityEle = document.getElementById("functionality");
 			
 			if(lastUpdateQRCodeParams)lastUpdateQRCodeParams["showExtraUI"] = toShow;
 			
 			if(!isRunningInAddon)
 			{
-				extraUIEle.style.display = "-moz-box";
 				showExtraUIEle.style.display = "none";
 				hideExtraUIEle.style.display = "none";
 			}
@@ -267,12 +259,14 @@
 				extraUIEle.style.display = "-moz-box";
 				showExtraUIEle.style.display = "none";
 				hideExtraUIEle.style.display = "inline-block";
+				//functionalityEle.style.display = "block";
 			}
 			else
 			{
 				extraUIEle.style.display = "none";
 				showExtraUIEle.style.display = "inline-block";
 				hideExtraUIEle.style.display = "none";
+				//functionalityEle.style.display = "none";
 			}
 			if(isRunningInAddon && addon)
 			{
@@ -312,30 +306,28 @@
 	<div id="wrap" class="wrap">
 		<!-- This is where our QRCode will appear in. -->
 		<div id="qrcode" style=""></div>
-		<div id="nonQRSection">
-			<div class="hideExtraUI controlsGroup" id="hideExtraUI">
-				<a class="control" href="javascript:void(0);" onclick="handleShowExtraUI(false)"><i id="sidebarSwitch" class="icon-caret-left"></i></a>
-			</div>
-			<div class="showExtraUI controlsGroup" id="showExtraUI">
-				<a class="control" href="javascript:void(0);" onclick="handleShowExtraUI(true)"><i id="sidebarSwitch" class="icon-caret-right"></i></a>
+		<div id="nonQRSection" class="nonQRSection">
+			<div class="controls">
+				<div class="showExtraUI controlsGroup">
+					<a class="control" id="showExtraUI" title="More..." href="javascript:void(0);" onclick="handleShowExtraUI(true)"><i id="sidebarSwitch" class="icon-caret-right"></i></a>
+					<a class="control" id="hideExtraUI" title="Less..." href="javascript:void(0);" onclick="handleShowExtraUI(false)"><i id="sidebarSwitch" class="icon-caret-left"></i></a>
+				</div>
+				<div id="functionality" class="functionality">
+					<div class="controlsGroup">
+						<a id="saveLink" class="control" title="Save" href="javascript:void(0);" onclick="handleSaveClick()"><i class="icon-save"></i></a>
+						<a id="openLink" class="control" title="Open in a new tab" href="javascript:void(0);" onclick="handleOpenClick()"><i class="icon-resize-full"></i></a>
+					</div>
+					<!--
+					<div class="controlsGroup">
+						<a id="zoomIn" class="control" href="javascript:void(0);" onclick="handleZoomIn()"><i class="icon-zoom-in"></i></a>
+						<a id="zoomOut" class="control" href="javascript:void(0);" onclick="handleZoomOut()"><i class="icon-zoom-out"></i></a>
+					</div>
+					-->
+				</div>
 			</div>
 			<div class="extraUI" id="extraUI">
 				<div id="textArea" class="qrText">
 					<textarea id="text" class="qrText" onkeyup="handleTAChange()"></textarea>
-				</div>
-				<div class="controls">
-					<div class="functionalities">
-						<div class="controlsGroup">
-							<a id="saveLink" class="control" href="javascript:void(0);" onclick="handleSaveClick()"><i class="icon-save"></i></a>
-							<a id="openLink" class="control" href="javascript:void(0);" onclick="handleOpenClick()"><i class="icon-resize-full"></i></a>
-						</div>
-						<!--
-						<div class="controlsGroup">
-							<a id="zoomIn" class="control" href="javascript:void(0);" onclick="handleZoomIn()"><i class="icon-zoom-in"></i></a>
-							<a id="zoomOut" class="control" href="javascript:void(0);" onclick="handleZoomOut()"><i class="icon-zoom-out"></i></a>
-						</div>
-						-->
-					</div>
 				</div>
 			</div>
 		</div>
