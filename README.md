@@ -12,4 +12,4 @@ Credits:
 * Copied some styles from Twitter's Bootstrap project :) - http://twitter.github.io/bootstrap/
 * Special thanks to Nghia Hoang for providing mockups for a UI far better than the developer one I came up with :)
 
-AMO listing page: https://addons.mozilla.org/en-US/firefox/addon/offline-qr-generator/
+AMO listing page: https://addons.mozilla.org/en-US/firefox/addon/OfflineQR/
