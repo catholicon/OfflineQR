@@ -26,5 +26,5 @@
 			"value": 3
 		}
 	],
-	"permissions": {"private-browsing": false}
+	"permissions": {"private-browsing": true}
 }
