@@ -6,7 +6,7 @@ Credits:
 * QR code generator by Kazuhiko Arase
 * rendering qr code generated from above on html5 canvas by Amanuel Tewolde
 * JS based utf8 encoding from http://www.webtoolkit.info/javascript-utf8.html
-* 16x16px icon: http://www.iconfinder.com/icondetails/25689/16/barcode_2d_icon 
+* 16x16px icon: http://www.iconfinder.com/icondetails/25689/16/barcode_2d_icon (author page: http://pinvoke.com/)
 * 32x32px icon: https://www.iconfinder.com/icons/174693/code_qr_icon#size=32 (author page: http://icons8.com/)
 * Local file save javascript from https://github.com/eligrey/FileSaver.js
 * Font Awesome by Dave Gandy - http://fortawesome.github.com/Font-Awesome
