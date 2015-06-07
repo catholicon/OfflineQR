@@ -21,7 +21,7 @@
 		},
 		{
 			"name": "QRBlockSize",
-			"title": "Block size in pixel (1-10)",
+			"title": "Block size in pixel (1-25)",
 			"type": "integer",
 			"value": 3
 		}

@@ -111,7 +111,7 @@
 				if(errorCorrectLevel==undefined)errorCorrectLevel = "L";
 			}
 
-			if(isNaN(blockSize) || blockSize<1 || blockSize>10)
+			if(isNaN(blockSize) || blockSize<1 || blockSize>25)
 			{
 				blockSize = undefined;
 			}
@@ -147,7 +147,7 @@
 	
 			var modCount = getModuleCountForVersion(reqVersion);
 			
-			var canvasSize = Math.max(60, Math.min(400, (modCount+8)*blockSize));
+			var canvasSize = Math.max(60, Math.min(1000, (modCount+8)*blockSize));
 			
 			var element = document.getElementById("qrcode");
 
@@ -245,7 +245,7 @@
 		}
 		function setZoomLevel(zoomLevel)
 		{
-			if(isNaN(zoomLevel) || zoomLevel<1 || zoomLevel>10)return;
+			if(isNaN(zoomLevel) || zoomLevel<1 || zoomLevel>25)return;
 			
 			if(lastUpdateQRCodeParams)lastUpdateQRCodeParams["blockSize"]=zoomLevel;
 			updateQRCodeWithTA();
