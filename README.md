@@ -2,7 +2,7 @@
 **You can find a replacement of this add-on for up-to-date Firefox versions here:**
 **https://github.com/rugk/offline-qr-code**
 
-**Or directly on AMO: https://addons.mozilla.org/firefox/addon/offline-qr-code-generator/**
+**Or directly on AMO: [https://addons.mozilla.org/firefox/addon/offline-qr-code-generator/](https://addons.mozilla.org/firefox/addon/offline-qr-code-generator/?src=external-legacy)**
 
 ----
 
