@@ -1,3 +1,12 @@
+**This add-on is currently unmaintained! Please do not use it, anymore!**
+**You can find a replacement of this add-on for up-to-date Firefox versions here:**
+**https://github.com/rugk/offline-qr-code**
+
+**Or directly on AMO: [https://addons.mozilla.org/firefox/addon/offline-qr-code-generator/](https://addons.mozilla.org/firefox/addon/offline-qr-code-generator/?src=external-legacy)**
+
+----
+
+
 This is the offline QR generator add-on for firefox.
 
 It's made using jetpack SDK, so it doesn't require browser restart on install/uninstall
